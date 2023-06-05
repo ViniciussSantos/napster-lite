@@ -5,16 +5,22 @@ import java.util.Scanner;
 
 public class Peer {
 
-
     public static void main(String[] args) throws Exception {
-        //TODO: read peerName, port and filePath from the command line
+        if (args.length != 3) {
+            System.out.println("Usage: java Peer <peerName> <port> <filePath>");
+            System.exit(1);
+        }
 
+        String peerName = args[0];
+        int port = Integer.parseInt(args[1]);
+        String filePath = args[2];
 
-        String peerName = "Peer " + (int) (Math.random() * 1000);
-        System.out.println("Peer name: " + peerName);
+        FileHelper.createFolderIfNotExists(filePath);
+        String[] files = FileHelper.getFilesInFolder(filePath);
+
 
         // Start the server thread to listen for incoming connections from other peers
-        new ServerThread(0).start();
+        new ServerThread(port).start();
 
         Scanner scanner = new Scanner(System.in);
 
@@ -124,6 +130,48 @@ public class Peer {
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * This FileHelper class has methods to work files and paths.
+     */
+    private static class FileHelper {
+        /*
+         * This method returns the name of files in the specified path.
+         */
+        public static String[] getFilesInFolder(String folderPath) {
+            File folder = new File(folderPath);
+            File[] files = folder.listFiles();
+
+            if (files == null) {
+                return new String[0];
+            }
+
+            String[] fileNames = new String[files.length];
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isFile()) {
+                    fileNames[i] = files[i].getName();
+                }
+            }
+
+            return fileNames;
+        }
+
+        /*
+         * This method checks if a folder exists and creates it if it doesn't.
+         */
+        public static void createFolderIfNotExists(String folderPath) {
+            File folder = new File(folderPath);
+            if (!folder.exists()) {
+                if (folder.mkdirs()) {
+                    System.out.println("Folder created: " + folderPath);
+                } else {
+                    System.out.println("Failed to create the folder: " + folderPath);
+                }
+            } else {
+                System.out.println("Folder already exists: " + folderPath);
             }
         }
     }
