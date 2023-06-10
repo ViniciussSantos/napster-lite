@@ -7,17 +7,16 @@ public class Peer {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 3) {
-            System.out.println("Usage: java Peer <peerName> <port> <filePath>");
+            System.out.println("Usage: java Peer <IpAddress> <port> <folderPath>");
             System.exit(1);
         }
 
-        String peerName = args[0];
+        String IpAddress = args[0];
         int port = Integer.parseInt(args[1]);
-        String filePath = args[2];
+        String folderPath = args[2];
 
-        FileHelper.createFolderIfNotExists(filePath);
-        String[] files = FileHelper.getFilesInFolder(filePath);
-
+        FileHelper.createFolderIfNotExists(folderPath);
+        String[] files = FileHelper.getFilesInFolder(folderPath);
 
         // Start the server thread to listen for incoming connections from other peers
         new ServerThread(port).start();
