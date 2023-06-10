@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Peer {
@@ -120,6 +121,7 @@ public class Peer {
                     clientSocket.close();
                     return;
                 }
+                writer.println("FILE FOUND");
                 File file = new File(filePath + "/" + fileName);
                 FileInputStream fis = new FileInputStream(file);
                 OutputStream os = clientSocket.getOutputStream();
@@ -169,7 +171,15 @@ public class Peer {
                 System.out.println("Connected to server: " + socket.getInetAddress().getHostAddress());
 
                 PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
                 writer.println("DOWNLOAD " + fileName);
+
+                String line;
+                if (!Objects.equals(line = reader.readLine(), "FILE FOUND")) {
+                    System.out.println(line);
+                    return;
+                }
 
                 File file = new File(folderPath + "/" + fileName);
 
