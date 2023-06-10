@@ -233,9 +233,16 @@ public class Peer {
                 System.out.println("Folder already exists: " + folderPath);
             }
         }
+
+        /*
+         * This method checks if a file exists.
+         * Only works on linux right now.
+         */
+
+        public static boolean checkIfFileExists(String folderPath, String fileName) {
+            return new File(folderPath + "/" + fileName).exists();
+        }
     }
-
-
 }
 
 
