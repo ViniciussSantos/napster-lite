@@ -1,3 +1,5 @@
+import rmiModel.PeerService;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -19,6 +21,8 @@ public class Peer {
         FileHelper.createFolderIfNotExists(folderPath);
         Vector<String> files = FileHelper.getFilesInFolder(folderPath);
 
+        Registry registry = LocateRegistry.getRegistry();
+        PeerService peerService = (PeerService) registry.lookup("rmi://127.0.0.1/PeerService");
 
         // Start the server thread to listen for incoming connections from other peers
         new ServerThread(Integer.parseInt(port), folderPath).start();
