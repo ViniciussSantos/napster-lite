@@ -3,8 +3,15 @@ import rmiModel.PeerService;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.Vector;
+
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 
 public class Peer {
 
@@ -27,8 +34,11 @@ public class Peer {
         // Start the server thread to listen for incoming connections from other peers
         new ServerThread(Integer.parseInt(port), folderPath).start();
 
-        Scanner scanner = new Scanner(System.in);
+        // Start the file watcher thread to watch for changes in the folder
+        new FileWatcher(folderPath, files, IpAddress, port, peerService).start();
 
+        // CLI
+        Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("Enter command - JOIN, SEARCH OR DOWNLOAD: ");
             String command = scanner.nextLine();
@@ -234,6 +244,78 @@ public class Peer {
     }
 
     /**
+     * This class represents the thread that will watch for changes in the folder and notifies the central server.
+     */
+    public static class FileWatcher extends Thread {
+
+        String path;
+        Vector<String> files;
+
+        String ipAddress;
+        String port;
+
+        PeerService peerService;
+
+        public FileWatcher(String path, Vector<String> files, String ipAddress, String port, PeerService peerService) {
+            this.path = path;
+            this.files = files;
+            this.ipAddress = ipAddress;
+            this.port = port;
+            this.peerService = peerService;
+        }
+
+        @Override
+        public void run() {
+            System.out.println("Watching path: " + path);
+            try {
+                WatchService watchService = FileSystems.getDefault().newWatchService();
+                Path path = Paths.get(this.path);
+                path.register(watchService, ENTRY_CREATE, ENTRY_DELETE);
+                while (true) {
+                    WatchKey key;
+                    while ((key = watchService.take()) != null) {
+                        for (WatchEvent<?> event : ((WatchKey) key).pollEvents()) {
+                            System.out.println("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
+                            if (event.kind() == ENTRY_CREATE) {
+                                System.out.println("File created: " + event.context());
+                                Path newPath = ((Path) key.watchable()).resolve((Path) event.context());
+                                String fileName = newPath.getFileName().toString();
+                                if (!files.contains(fileName)) {
+                                    files.add(fileName);
+                                    String result = peerService.updateFiles(ipAddress, port, files);
+                                    if (result != null) {
+                                        System.out.println(result);
+                                    } else {
+                                        System.out.println("Error updating files");
+                                    }
+                                }
+                            }
+                            if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
+                                System.out.println("File deleted: " + event.context());
+
+                                Path newPath = ((Path) key.watchable()).resolve((Path) event.context());
+                                String fileName = newPath.getFileName().toString();
+                                files.remove(fileName);
+                                String result = peerService.updateFiles(ipAddress, port, files);
+                                if (result != null) {
+                                    System.out.println(result);
+                                } else {
+                                    System.out.println("Error updating files");
+                                }
+                            }
+                        }
+                        key.reset();
+                    }
+                }
+
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    /**
      * This FileHelper class has methods to work files and paths.
      */
     private static class FileHelper {
@@ -285,6 +367,3 @@ public class Peer {
         }
     }
 }
-
-
-
