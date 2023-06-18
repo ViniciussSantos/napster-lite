@@ -49,7 +49,18 @@ public class Peer {
                     }
                     break;
                 case "SEARCH":
-                    System.out.println("NOT IMPLEMENTED YET");
+                    if (commandParts.length != 2) {
+                        System.out.println("Invalid command");
+                        System.out.println("Usage: SEARCH <fileName>");
+                        break;
+                    }
+                    String fileToSearch = commandParts[1].trim();
+                    String[] peers = peerService.searchFile(IpAddress, port, fileToSearch);
+                    if (peers.length == 0) {
+                        System.out.println("Nenhum peer com o arquivo solicitado");
+                    } else {
+                        System.out.println("Peers com arquivo solicitado: " + String.join(", ", peers));
+                    }
                     break;
                 case "DOWNLOAD":
                     if (commandParts.length != 3) {
