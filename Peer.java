@@ -17,7 +17,8 @@ public class Peer {
         String folderPath = args[2];
 
         FileHelper.createFolderIfNotExists(folderPath);
-        String[] files = FileHelper.getFilesInFolder(folderPath);
+        Vector<String> files = FileHelper.getFilesInFolder(folderPath);
+
 
         // Start the server thread to listen for incoming connections from other peers
         new ServerThread(port, folderPath).start();
@@ -210,18 +211,19 @@ public class Peer {
         /*
          * This method returns the name of files in the specified path.
          */
-        public static String[] getFilesInFolder(String folderPath) {
+        public static Vector<String> getFilesInFolder(String folderPath) {
             File folder = new File(folderPath);
             File[] files = folder.listFiles();
 
             if (files == null) {
-                return new String[0];
+                System.out.println("No files in folder: " + folderPath);
+                return new Vector<String>();
             }
 
-            String[] fileNames = new String[files.length];
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isFile()) {
-                    fileNames[i] = files[i].getName();
+            Vector<String> fileNames = new Vector<String>();
+            for (File file : files) {
+                if (file.isFile()) {
+                    fileNames.add(file.getName());
                 }
             }
 
