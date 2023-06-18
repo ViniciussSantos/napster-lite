@@ -30,7 +30,7 @@ public class Peer {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.println("Enter command: ");
+            System.out.println("Enter command - JOIN, SEARCH OR DOWNLOAD: ");
             String command = scanner.nextLine();
             String[] commandParts = command.split(" ");
 
@@ -65,6 +65,7 @@ public class Peer {
                 case "DOWNLOAD":
                     if (commandParts.length != 3) {
                         System.out.println("Invalid command");
+                        System.out.println("Usage: DOWNLOAD <peerIp:peerPort> <fileName>");
                         break;
                     }
                     String peerPort = commandParts[1].split(":")[1].trim();
