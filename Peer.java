@@ -35,6 +35,19 @@ public class Peer {
             String[] commandParts = command.split(" ");
 
             switch (commandParts[0].trim()) {
+                case "JOIN":
+                    if (commandParts.length != 1) {
+                        System.out.println("Invalid command");
+                        System.out.println("Usage: JOIN");
+                        break;
+                    }
+                    String response = peerService.registerPeer(IpAddress, port, files);
+                    if (response.equals("JOIN_OK")) {
+                        System.out.println("Sou Peer" + IpAddress + ":" + port + " com arquivos: " + String.join(", ", files));
+                    } else {
+                        System.out.println("Error registering peer");
+                    }
+                    break;
                 case "SEARCH":
                     System.out.println("NOT IMPLEMENTED YET");
                     break;
