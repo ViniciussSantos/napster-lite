@@ -13,7 +13,7 @@ public class Peer {
         }
 
         String IpAddress = args[0];
-        int port = Integer.parseInt(args[1]);
+        String port = args[1];
         String folderPath = args[2];
 
         FileHelper.createFolderIfNotExists(folderPath);
@@ -21,7 +21,7 @@ public class Peer {
 
 
         // Start the server thread to listen for incoming connections from other peers
-        new ServerThread(port, folderPath).start();
+        new ServerThread(Integer.parseInt(port), folderPath).start();
 
         Scanner scanner = new Scanner(System.in);
 
