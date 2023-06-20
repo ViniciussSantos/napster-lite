@@ -46,11 +46,16 @@ public class Peer {
 
             switch (commandParts[0].trim()) {
                 case "JOIN":
-                    if (commandParts.length != 1) {
+                    if (commandParts.length != 4) {
                         System.out.println("Invalid command");
-                        System.out.println("Usage: JOIN");
+                        System.out.println("Usage: JOIN <IpAddress> <port> <folderPath>");
                         break;
                     }
+                    if (!Objects.equals(IpAddress, commandParts[1].trim()) || !port.equals(commandParts[2].trim()) || !Objects.equals(folderPath, commandParts[3].trim())) {
+                        System.out.println("Comandos passados no JOIN divergem dos passados na inicialização");
+                        break;
+                    }
+
                     String response = serverService.registerPeer(IpAddress, port, files);
                     if (response.equals("JOIN_OK")) {
                         System.out.println("Sou Peer" + IpAddress + ":" + port + " com arquivos: " + String.join(", ", files));
