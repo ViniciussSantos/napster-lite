@@ -1,4 +1,4 @@
-import rmiModel.PeerServiceImpl;
+import rmiModel.ServerServiceImpl;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -8,8 +8,8 @@ public class Servidor {
 
         LocateRegistry.createRegistry(1099);
         Registry registry = LocateRegistry.getRegistry();
-        PeerServiceImpl peerService = new PeerServiceImpl();
-        registry.bind("rmi://127.0.0.1/PeerService", peerService);
+        ServerServiceImpl peerService = new ServerServiceImpl();
+        registry.bind("rmi://127.0.0.1/ServerService", peerService);
         System.out.println("Servidor iniciado");
     }
 }

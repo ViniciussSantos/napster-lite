@@ -3,7 +3,7 @@ package rmiModel;
 import java.rmi.Remote;
 import java.util.Vector;
 
-public interface PeerService extends Remote {
+public interface ServerService extends Remote {
 
     public String registerPeer(String ipAddress, String port, Vector<String> files) throws java.rmi.RemoteException;
 

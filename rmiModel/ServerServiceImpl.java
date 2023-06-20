@@ -5,11 +5,11 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PeerServiceImpl extends UnicastRemoteObject implements PeerService {
+public class ServerServiceImpl extends UnicastRemoteObject implements ServerService {
 
     ConcurrentHashMap<String, Files> peers = new ConcurrentHashMap<String, Files>();
 
-    public PeerServiceImpl() throws RemoteException {
+    public ServerServiceImpl() throws RemoteException {
         super();
     }
 

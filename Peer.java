@@ -1,4 +1,4 @@
-import rmiModel.PeerService;
+import rmiModel.ServerService;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -29,13 +29,13 @@ public class Peer {
         Vector<String> files = FileHelper.getFilesInFolder(folderPath);
 
         Registry registry = LocateRegistry.getRegistry();
-        PeerService peerService = (PeerService) registry.lookup("rmi://127.0.0.1/PeerService");
+        ServerService serverService = (ServerService) registry.lookup("rmi://127.0.0.1/ServerService");
 
         // Start the server thread to listen for incoming connections from other peers
         new ServerThread(Integer.parseInt(port), folderPath).start();
 
         // Start the file watcher thread to watch for changes in the folder
-        new FileWatcher(folderPath, files, IpAddress, port, peerService).start();
+        new FileWatcher(folderPath, files, IpAddress, port, serverService).start();
 
         // CLI
         Scanner scanner = new Scanner(System.in);
@@ -51,7 +51,7 @@ public class Peer {
                         System.out.println("Usage: JOIN");
                         break;
                     }
-                    String response = peerService.registerPeer(IpAddress, port, files);
+                    String response = serverService.registerPeer(IpAddress, port, files);
                     if (response.equals("JOIN_OK")) {
                         System.out.println("Sou Peer" + IpAddress + ":" + port + " com arquivos: " + String.join(", ", files));
                     } else {
@@ -65,7 +65,7 @@ public class Peer {
                         break;
                     }
                     String fileToSearch = commandParts[1].trim();
-                    String[] peers = peerService.searchFile(IpAddress, port, fileToSearch);
+                    String[] peers = serverService.searchFile(IpAddress, port, fileToSearch);
                     if (peers.length == 0) {
                         System.out.println("Nenhum peer com o arquivo solicitado");
                     } else {
@@ -254,14 +254,14 @@ public class Peer {
         String ipAddress;
         String port;
 
-        PeerService peerService;
+        ServerService serverService;
 
-        public FileWatcher(String path, Vector<String> files, String ipAddress, String port, PeerService peerService) {
+        public FileWatcher(String path, Vector<String> files, String ipAddress, String port, ServerService serverService) {
             this.path = path;
             this.files = files;
             this.ipAddress = ipAddress;
             this.port = port;
-            this.peerService = peerService;
+            this.serverService = serverService;
         }
 
         @Override
@@ -282,7 +282,7 @@ public class Peer {
                                 String fileName = newPath.getFileName().toString();
                                 if (!files.contains(fileName)) {
                                     files.add(fileName);
-                                    String result = peerService.updateFiles(ipAddress, port, files);
+                                    String result = serverService.updateFiles(ipAddress, port, files);
                                     if (result != null) {
                                         System.out.println(result);
                                     } else {
@@ -296,7 +296,7 @@ public class Peer {
                                 Path newPath = ((Path) key.watchable()).resolve((Path) event.context());
                                 String fileName = newPath.getFileName().toString();
                                 files.remove(fileName);
-                                String result = peerService.updateFiles(ipAddress, port, files);
+                                String result = serverService.updateFiles(ipAddress, port, files);
                                 if (result != null) {
                                     System.out.println(result);
                                 } else {
