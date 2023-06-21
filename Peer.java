@@ -39,6 +39,7 @@ public class Peer {
 
         // CLI
         Scanner scanner = new Scanner(System.in);
+        String lastSearchedFilename = null;
         while (true) {
             System.out.println("Enter command - JOIN, SEARCH OR DOWNLOAD: ");
             String command = scanner.nextLine();
@@ -69,8 +70,8 @@ public class Peer {
                         System.out.println("Usage: SEARCH <fileName>");
                         break;
                     }
-                    String fileToSearch = commandParts[1].trim();
-                    String[] peers = serverService.searchFile(IpAddress, port, fileToSearch);
+                    lastSearchedFilename = commandParts[1].trim();
+                    String[] peers = serverService.searchFile(IpAddress, port, lastSearchedFilename);
                     if (peers.length == 0) {
                         System.out.println("Nenhum peer com o arquivo solicitado");
                     } else {
@@ -78,14 +79,19 @@ public class Peer {
                     }
                     break;
                 case "DOWNLOAD":
-                    if (commandParts.length != 3) {
+                    if (commandParts.length != 2) {
                         System.out.println("Invalid command");
-                        System.out.println("Usage: DOWNLOAD <peerIp:peerPort> <fileName>");
+                        System.out.println("Usage: DOWNLOAD <peerIp:peerPort>");
                         break;
                     }
+                    
+                    if (lastSearchedFilename == null) {
+                        System.out.println("Nenhum arquivo foi pesquisado");
+                        break;
+                    }
+
                     String peerPort = commandParts[1].split(":")[1].trim();
-                    String fileName = commandParts[2].trim();
-                    new ClientThread(Integer.parseInt(peerPort), folderPath, fileName).start();
+                    new ClientThread(Integer.parseInt(peerPort), folderPath, lastSearchedFilename).start();
                     break;
                 default:
                     System.out.println("Invalid command");
