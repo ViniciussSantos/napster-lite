@@ -41,4 +41,18 @@ public class ServerServiceImpl extends UnicastRemoteObject implements ServerServ
         }
         return result.toArray(new String[0]);
     }
+
+    public static class Files {
+
+        Vector<String> files;
+
+        public Files(Vector<String> files) {
+            this.files = files;
+        }
+
+        public boolean contains(String fileName) {
+            return files.contains(fileName);
+        }
+    }
+
 }
