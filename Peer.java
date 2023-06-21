@@ -84,7 +84,7 @@ public class Peer {
                         System.out.println("Usage: DOWNLOAD <peerIp:peerPort>");
                         break;
                     }
-                    
+
                     if (lastSearchedFilename == null) {
                         System.out.println("Nenhum arquivo foi pesquisado");
                         break;
@@ -293,10 +293,8 @@ public class Peer {
                                 String fileName = newPath.getFileName().toString();
                                 if (!files.contains(fileName)) {
                                     files.add(fileName);
-                                    String result = serverService.updateFiles(ipAddress, port, files);
-                                    if (result != null) {
-                                        System.out.println(result);
-                                    } else {
+                                    String response = serverService.updateFiles(ipAddress, port, files);
+                                    if (!Objects.equals(response, "UPDATE_OK")) {
                                         System.out.println("Error updating files");
                                     }
                                 }
@@ -307,10 +305,8 @@ public class Peer {
                                 Path newPath = ((Path) key.watchable()).resolve((Path) event.context());
                                 String fileName = newPath.getFileName().toString();
                                 files.remove(fileName);
-                                String result = serverService.updateFiles(ipAddress, port, files);
-                                if (result != null) {
-                                    System.out.println(result);
-                                } else {
+                                String response = serverService.updateFiles(ipAddress, port, files);
+                                if (!Objects.equals(response, "UPDATE_OK")) {
                                     System.out.println("Error updating files");
                                 }
                             }
