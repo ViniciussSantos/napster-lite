@@ -42,6 +42,9 @@ public class ServerServiceImpl extends UnicastRemoteObject implements ServerServ
         return result.toArray(new String[0]);
     }
 
+    /**
+     * Class that represents the files of a peer
+     */
     public static class Files {
 
         Vector<String> files;

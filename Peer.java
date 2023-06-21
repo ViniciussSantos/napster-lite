@@ -25,9 +25,12 @@ public class Peer {
         String port = args[1];
         String folderPath = args[2];
 
+        // Create folder if it doesn't exist
         FileHelper.createFolderIfNotExists(folderPath);
+        // Get files in folder
         Vector<String> files = FileHelper.getFilesInFolder(folderPath);
 
+        // RMI
         Registry registry = LocateRegistry.getRegistry();
         ServerService serverService = (ServerService) registry.lookup("rmi://127.0.0.1/ServerService");
 
@@ -120,7 +123,6 @@ public class Peer {
         public void run() {
             try {
                 ServerSocket serverSocket = new ServerSocket(port);
-                System.out.println("Server listening on port " + serverSocket.getLocalPort());
 
                 while (!Thread.currentThread().isInterrupted()) {
                     Socket clientSocket = serverSocket.accept();
@@ -223,15 +225,17 @@ public class Peer {
 
                 PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+                // Send DOWNLOAD request to another peer
                 writer.println("DOWNLOAD " + fileName);
 
+                //Prints error message if file is not found
                 String line;
                 if (!Objects.equals(line = reader.readLine(), "FILE FOUND")) {
                     System.out.println(line);
                     return;
                 }
 
+                // Receive file
                 File file = new File(folderPath + FileSystems.getDefault().getSeparator() + fileName);
 
                 FileOutputStream fos = new FileOutputStream(file);
@@ -246,8 +250,8 @@ public class Peer {
                 fos.close();
                 is.close();
 
-                System.out.println("File received: " + folderPath);
                 socket.close();
+                System.out.println("Arquivo" + fileName + " baixado com sucesso na pasta " + folderPath);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -277,8 +281,9 @@ public class Peer {
 
         @Override
         public void run() {
-            System.out.println("Watching path: " + path);
+
             try {
+                // Creates a WatchService and registers the logDir below with the ENTRY_CREATE and ENTRY_DELETE events.
                 WatchService watchService = FileSystems.getDefault().newWatchService();
                 Path path = Paths.get(this.path);
                 path.register(watchService, ENTRY_CREATE, ENTRY_DELETE);
@@ -286,9 +291,8 @@ public class Peer {
                     WatchKey key;
                     while ((key = watchService.take()) != null) {
                         for (WatchEvent<?> event : ((WatchKey) key).pollEvents()) {
-                            System.out.println("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
+                            // If a new file is created, it is added to the list of files and notifies the central server.
                             if (event.kind() == ENTRY_CREATE) {
-                                System.out.println("File created: " + event.context());
                                 Path newPath = ((Path) key.watchable()).resolve((Path) event.context());
                                 String fileName = newPath.getFileName().toString();
                                 if (!files.contains(fileName)) {
@@ -299,8 +303,8 @@ public class Peer {
                                     }
                                 }
                             }
+                            // If a file is deleted, it is removed from the list of files and notifies the central server.
                             if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
-                                System.out.println("File deleted: " + event.context());
 
                                 Path newPath = ((Path) key.watchable()).resolve((Path) event.context());
                                 String fileName = newPath.getFileName().toString();
@@ -359,14 +363,11 @@ public class Peer {
                 } else {
                     System.out.println("Failed to create the folder: " + folderPath);
                 }
-            } else {
-                System.out.println("Folder already exists: " + folderPath);
             }
         }
 
         /*
          * This method checks if a file exists.
-         * Only works on linux right now.
          */
 
         public static boolean checkIfFileExists(String folderPath, String fileName) {
