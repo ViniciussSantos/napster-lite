@@ -173,7 +173,7 @@ public class Peer {
                     return;
                 }
                 writer.println("FILE FOUND");
-                File file = new File(filePath + "/" + fileName);
+                File file = new File(filePath + FileSystems.getDefault().getSeparator() + fileName);
                 FileInputStream fis = new FileInputStream(file);
                 OutputStream os = clientSocket.getOutputStream();
 
@@ -232,7 +232,7 @@ public class Peer {
                     return;
                 }
 
-                File file = new File(folderPath + "/" + fileName);
+                File file = new File(folderPath + FileSystems.getDefault().getSeparator() + fileName);
 
                 FileOutputStream fos = new FileOutputStream(file);
                 InputStream is = socket.getInputStream();
@@ -370,7 +370,7 @@ public class Peer {
          */
 
         public static boolean checkIfFileExists(String folderPath, String fileName) {
-            return new File(folderPath + "/" + fileName).exists();
+            return new File(folderPath + FileSystems.getDefault().getSeparator() + fileName).exists();
         }
     }
 }
