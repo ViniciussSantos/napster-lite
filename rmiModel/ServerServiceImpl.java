@@ -15,8 +15,8 @@ public class ServerServiceImpl extends UnicastRemoteObject implements ServerServ
 
     @Override
     public String registerPeer(String ipAddress, String port, Vector<String> files) throws RemoteException {
-        System.out.println("Peer " + ipAddress + ":" + port + " adicionado com arquivos " + String.join(", ", files));
         peers.put(ipAddress + ":" + port, new Files(files));
+        System.out.println("Peer " + ipAddress + ":" + port + " adicionado com arquivos " + String.join(", ", files));
         return "JOIN_OK";
     }
 
