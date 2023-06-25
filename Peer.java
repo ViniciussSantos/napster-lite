@@ -25,7 +25,7 @@ public class Peer {
         String port = args[1];
         String folderPath = args[2];
 
-        // Create folder if it doesn't exist
+        // Checks to see if the folder exists, and if not, creates it
         FileHelper.createFolderIfNotExists(folderPath);
         // Get files in folder
         Vector<String> files = FileHelper.getFilesInFolder(folderPath);
@@ -40,7 +40,7 @@ public class Peer {
         // Start the file watcher thread to watch for changes in the folder
         new FileWatcher(folderPath, files, IpAddress, port, serverService).start();
 
-        // CLI
+        // CLI (menu interativo)
         Scanner scanner = new Scanner(System.in);
         String lastSearchedFilename = null;
         while (true) {
@@ -291,7 +291,7 @@ public class Peer {
                     WatchKey key;
                     while ((key = watchService.take()) != null) {
                         for (WatchEvent<?> event : ((WatchKey) key).pollEvents()) {
-                            // If a new file is created, it is added to the list of files and notifies the central server.
+                            // If a new file is created, it is added to the Peer's list of files and the central server is notified.
                             if (event.kind() == ENTRY_CREATE) {
                                 Path newPath = ((Path) key.watchable()).resolve((Path) event.context());
                                 String fileName = newPath.getFileName().toString();
@@ -303,8 +303,8 @@ public class Peer {
                                     }
                                 }
                             }
-                            // If a file is deleted, it is removed from the list of files and notifies the central server.
-                            if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
+                            // If a file is deleted, it is removed from the Peer's list of files and the central server is notified.
+                            if (event.kind() == ENTRY_DELETE) {
 
                                 Path newPath = ((Path) key.watchable()).resolve((Path) event.context());
                                 String fileName = newPath.getFileName().toString();
