@@ -20,6 +20,10 @@ public class ServerServiceImpl extends UnicastRemoteObject implements ServerServ
         return "JOIN_OK";
     }
 
+    public void unregisterPeer(String ipAddress, String port) throws RemoteException {
+        peers.remove(ipAddress + ":" + port);
+    }
+
     @Override
     public String updateFiles(String ipAddress, String port, Vector<String> files) throws RemoteException {
         peers.put(ipAddress + ":" + port, new Files(files));

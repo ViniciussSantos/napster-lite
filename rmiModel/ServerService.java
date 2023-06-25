@@ -16,6 +16,8 @@ public interface ServerService extends Remote {
      */
     public String registerPeer(String ipAddress, String port, Vector<String> files) throws java.rmi.RemoteException;
 
+    public void unregisterPeer(String ipAddress, String port) throws java.rmi.RemoteException;
+
     /**
      * UPDATE
      *
