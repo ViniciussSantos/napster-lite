@@ -103,7 +103,7 @@ public class Peer {
                 case "DOWNLOAD":
                     if (commandParts.length != 2) {
                         System.out.println("Invalid command");
-                        System.out.println("Usage: DOWNLOAD <peerIp:peerPort>");
+                        System.out.println("Usage: DOWNLOAD <peerIpAddress:peerPort>");
                         break;
                     }
 
@@ -187,7 +187,6 @@ public class Peer {
                 }
 
                 String fileName = requestParts[1];
-                System.out.println("File name: " + fileName);
 
                 if (!FileHelper.checkIfFileExists(filePath, fileName)) {
                     writer.println("File not found");
@@ -269,9 +268,8 @@ public class Peer {
 
                 fos.close();
                 is.close();
-
                 socket.close();
-                System.out.println("Arquivo" + fileName + " baixado com sucesso na pasta " + folderPath);
+                System.out.println("Arquivo " + fileName + " baixado com sucesso na pasta " + folderPath);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -358,7 +356,6 @@ public class Peer {
             File[] files = folder.listFiles();
 
             if (files == null) {
-                System.out.println("No files in folder: " + folderPath);
                 return new Vector<String>();
             }
 
