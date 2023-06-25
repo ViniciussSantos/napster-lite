@@ -112,8 +112,9 @@ public class Peer {
                         break;
                     }
 
+                    String peerIpAddress = commandParts[1].split(":")[0].trim();
                     String peerPort = commandParts[1].split(":")[1].trim();
-                    new ClientThread(Integer.parseInt(peerPort), folderPath, lastSearchedFilename).start();
+                    new ClientThread(peerIpAddress, Integer.parseInt(peerPort), folderPath, lastSearchedFilename).start();
                     break;
                 default:
                     System.out.println("Invalid command");
@@ -219,11 +220,13 @@ public class Peer {
      * This class represents the client thread that will connect to other peers.
      */
     private static class ClientThread extends Thread {
+        private final String ipAddress;
         private final int port;
         private final String folderPath;
         private final String fileName;
 
-        public ClientThread(int port, String folderPath, String fileName) {
+        public ClientThread(String ipAddress, int port, String folderPath, String fileName) {
+            this.ipAddress = ipAddress;
             this.port = port;
             this.folderPath = folderPath;
             this.fileName = fileName;
@@ -238,9 +241,7 @@ public class Peer {
                     return;
                 }
 
-                String serverAddress = "localhost";
-                Socket socket = new Socket(serverAddress, port);
-                System.out.println("Connected to server: " + socket.getInetAddress().getHostAddress());
+                Socket socket = new Socket(ipAddress, port);
 
                 PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
