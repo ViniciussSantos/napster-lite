@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.*;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Objects;
@@ -34,11 +35,6 @@ public class Peer {
         Registry registry = LocateRegistry.getRegistry();
         ServerService serverService = (ServerService) registry.lookup("rmi://127.0.0.1/ServerService");
 
-        // Start the server thread to listen for incoming connections from other peers
-        new ServerThread(Integer.parseInt(port), folderPath).start();
-
-        // Start the file watcher thread to watch for changes in the folder
-        new FileWatcher(folderPath, files, IpAddress, port, serverService).start();
 
         // CLI (menu interativo)
         Scanner scanner = new Scanner(System.in);
@@ -67,7 +63,25 @@ public class Peer {
                     }
 
                     if (response.equals("JOIN_OK")) {
-                        System.out.println("Sou Peer" + IpAddress + ":" + port + " com arquivos: " + String.join(", ", files));
+                        // Register shutdown hook to unregister peer when the program is terminated
+                        Runtime.getRuntime().addShutdownHook(new Thread() {
+                            @Override
+                            public void run() {
+                                try {
+                                    serverService.unregisterPeer(IpAddress, port);
+                                } catch (RemoteException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        });
+
+                        // Start the server thread to listen for incoming connections from other peers
+                        new ServerThread(Integer.parseInt(port), folderPath).start();
+
+                        // Start the file watcher thread to watch for changes in the folder
+                        new FileWatcher(folderPath, files, IpAddress, port, serverService).start();
+
+                        System.out.println("Sou Peer " + IpAddress + ":" + port + " com arquivos: " + String.join(", ", files));
                     } else {
                         System.out.println("Error registering peer");
                     }
