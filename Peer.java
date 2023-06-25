@@ -61,6 +61,11 @@ public class Peer {
                     }
 
                     String response = serverService.registerPeer(IpAddress, port, files);
+                    if (response.equals("JOIN_ALREADY")) {
+                        System.out.println("Peer já registrado");
+                        break;
+                    }
+
                     if (response.equals("JOIN_OK")) {
                         System.out.println("Sou Peer" + IpAddress + ":" + port + " com arquivos: " + String.join(", ", files));
                     } else {
