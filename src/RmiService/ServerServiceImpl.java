@@ -1,4 +1,4 @@
-package rmiModel;
+package src.RmiService;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -20,7 +20,7 @@ public class ServerServiceImpl extends UnicastRemoteObject implements ServerServ
         }
 
         peers.put(ipAddress + ":" + port, new Files(files));
-        System.out.println("Peer " + ipAddress + ":" + port + " adicionado com arquivos " + String.join(", ", files));
+        System.out.println("src.Peer " + ipAddress + ":" + port + " adicionado com arquivos " + String.join(", ", files));
         return "JOIN_OK";
     }
 
@@ -36,7 +36,7 @@ public class ServerServiceImpl extends UnicastRemoteObject implements ServerServ
 
     @Override
     public String[] searchFile(String ipAddress, String port, String fileName) throws RemoteException {
-        System.out.println("Peer " + ipAddress + ":" + port + " solicitou arquivo " + fileName);
+        System.out.println("src.Peer " + ipAddress + ":" + port + " solicitou arquivo " + fileName);
 
         Vector<String> result = new Vector<String>();
 
