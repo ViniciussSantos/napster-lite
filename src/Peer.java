@@ -1,4 +1,6 @@
-import rmiModel.ServerService;
+package src;
+
+import src.RmiService.ServerService;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -309,7 +311,7 @@ public class Peer {
                     WatchKey key;
                     while ((key = watchService.take()) != null) {
                         for (WatchEvent<?> event : ((WatchKey) key).pollEvents()) {
-                            // If a new file is created, it is added to the Peer's list of files and the central server is notified.
+                            // If a new file is created, it is added to the src.Peer's list of files and the central server is notified.
                             if (event.kind() == ENTRY_CREATE) {
                                 Path newPath = ((Path) key.watchable()).resolve((Path) event.context());
                                 String fileName = newPath.getFileName().toString();
@@ -321,7 +323,7 @@ public class Peer {
                                     }
                                 }
                             }
-                            // If a file is deleted, it is removed from the Peer's list of files and the central server is notified.
+                            // If a file is deleted, it is removed from the src.Peer's list of files and the central server is notified.
                             if (event.kind() == ENTRY_DELETE) {
 
                                 Path newPath = ((Path) key.watchable()).resolve((Path) event.context());
